@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from data import get_batch
-from meta_optimizer import MetaModel, MetaOptimizer, FastMetaOptimizer
+from meta_optimizer import MetaModel, FastMetaOptimizer
 from model import Model
 from torch.autograd import Variable
 from torchvision import datasets, transforms
@@ -114,7 +114,6 @@ def main():
                     loss_sum += (loss - Variable(prev_loss))
 
                     prev_loss = loss.data
-
                 # Update the parameters of the meta optimizer
                 meta_optimizer.zero_grad()
                 loss_sum.backward()

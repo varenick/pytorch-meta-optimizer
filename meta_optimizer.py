@@ -132,12 +132,13 @@ class FastMetaOptimizer(nn.Module):
         self.f = self.f.expand(flat_params.size(0), 1)
 
         loss = loss.expand_as(flat_grads)
+
         inputs = Variable(torch.cat((preprocess_gradients(flat_grads), flat_params.data, loss), 1))
         inputs = torch.cat((inputs, self.f, self.i), 1)
         self.f, self.i = self(inputs)
 
         # Meta update itself
-        flat_params = self.f * flat_params - self.i * Variable(flat_grads)
+        flat_params = self.f.contiguous().view((-1)) * flat_params - self.i.contiguous().view((-1)) * Variable(flat_grads)
 
         self.meta_model.set_flat_params(flat_params)
 

@@ -16,4 +16,4 @@ class Model(nn.Module):
         x = inputs.view(-1, 28 * 28)
         x = F.relu(self.linear1(x))
         x = self.linear2(x)
-        return F.log_softmax(x)
+        return F.log_softmax(x, dim=1)
