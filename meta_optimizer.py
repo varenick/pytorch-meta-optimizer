@@ -98,6 +98,8 @@ class FastMetaOptimizer(nn.Module):
         self.linear1 = nn.Linear(6, 2)
         self.linear1.bias.data[0] = 1
 
+        self.flat_params_backup = None
+
     def forward(self, x):
         # Gradients preprocessing
         x = F.sigmoid(self.linear1(x))
@@ -145,6 +147,18 @@ class FastMetaOptimizer(nn.Module):
         # Finally, copy values from the meta model to the normal one.
         self.meta_model.copy_params_to(model_with_grads)
         return self.meta_model.model
+
+    def backup_model_params(self):
+        self.flat_params_backup = self.meta_model.get_flat_params()
+
+    def restore_model_params(self, keep_backup=False):
+        if self.flat_params_backup is None:
+            raise ValueError("Can't restore model parameters before backup")
+        else:
+            self.meta_model.set_flat_params(self.flat_params_backup)
+            if not keep_backup:
+                self.flat_params_backup = None
+
 
 # A helper class that keeps track of meta updates
 # It's done by replacing parameters with variables and applying updates to
